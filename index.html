@@ -49,7 +49,7 @@
         <h2>Welcome to the Assessment</h2>
         <p>Please enter your participation code to begin:</p>
         <input type="text" id="participant-code" placeholder="Enter your code">
-        <button onclick="startAssessment()">Start</button>
+        <button id="start-button" onclick="startAssessment()">Start</button>
     </section>
 
     <!-- Digit Span Task -->
@@ -68,73 +68,22 @@
         <button onclick="submitReverse()">Submit</button>
     </section>
 
-    <!-- Stroop Task -->
-    <section id="stroop">
-        <h2>Stroop Task</h2>
-        <p>Identify the color of the text, not the word.</p>
-        <div id="stroop-container" class="trial-container"></div>
-        <input type="text" id="stroop-input" placeholder="Enter the color">
-        <button onclick="submitStroop()">Submit</button>
-    </section>
-
-    <!-- Posner Cueing Task -->
-    <section id="posner">
-        <h2>Posner Cueing Task</h2>
-        <p>Focus on the center of the screen and respond to the direction of the arrow ("l" for left, "r" for right).</p>
-        <div id="posner-container" class="trial-container">Focus here</div>
-        <input type="text" id="posner-input" placeholder="Enter 'l' or 'r'">
-        <button onclick="submitPosner()">Submit</button>
-    </section>
-
-    <!-- Continuous Performance Test -->
-    <section id="cpt">
-        <h2>Continuous Performance Test</h2>
-        <p>Press SPACE for the target ("X"). Do not respond to non-targets ("A", "B", "C", "D").</p>
-        <div id="cpt-container" class="trial-container">Get Ready...</div>
-        <button id="start-cpt-button" onclick="startCPT()">Start CPT</button>
-    </section>
-
-    <!-- Questionnaire Section -->
-    <section id="self-assessment">
-        <h2>Self-Assessment</h2>
-        <p>Rate the following questions on a scale of 1-10:</p>
-        <form id="self-assessment-form">
-            <p>1. How focused did you feel during the tasks? <input type="number" min="1" max="10" name="question1"></p>
-            <p>2. How fatigued do you feel after the tasks? <input type="number" min="1" max="10" name="question2"></p>
-            <p>3. How enjoyable did you find the tasks? <input type="number" min="1" max="10" name="question3"></p>
-            <p>4. How challenging were the tasks? <input type="number" min="1" max="10" name="question4"></p>
-            <p>5. How well do you think you performed? <input type="number" min="1" max="10" name="question5"></p>
-            <p>6. How often did you lose focus? <input type="number" min="1" max="10" name="question6"></p>
-            <p>7. How confident do you feel about your responses? <input type="number" min="1" max="10" name="question7"></p>
-            <p>8. How easy was it to understand the instructions? <input type="number" min="1" max="10" name="question8"></p>
-            <p>9. How comfortable were you during the assessment? <input type="number" min="1" max="10" name="question9"></p>
-            <p>10. How likely are you to participate in similar assessments again? <input type="number" min="1" max="10" name="question10"></p>
-            <button type="button" onclick="submitSelfAssessment()">Submit</button>
-        </form>
-    </section>
-
+    <!-- Script for Interactivity -->
     <script>
         const trialsConfig = {
             digitDuration: 5000, // Time to display digits in milliseconds
-            stroopTrials: 15,
-            posnerTrials: 30,
-            cptTrials: 100,
         };
 
-        let currentSection = "welcome";
+        let currentSection = "welcome"; // Keeps track of the current active section
         let responses = [];
-        let trialIndex = 0;
-        let digits;
+        let digits; // Stores the digit sequence for the task
 
+        // Function to navigate to the next section
         function navigateToNextSection() {
             const sections = [
                 "welcome",
                 "digit-span-forward",
                 "digit-span-reverse",
-                "stroop",
-                "posner",
-                "cpt",
-                "self-assessment",
             ];
             const currentIndex = sections.indexOf(currentSection);
             if (currentIndex !== -1 && currentIndex < sections.length - 1) {
@@ -147,6 +96,7 @@
             }
         }
 
+        // Start the assessment
         function startAssessment() {
             const code = document.getElementById("participant-code").value.trim();
             if (code) {
@@ -157,25 +107,19 @@
             }
         }
 
-        function startTask(section) {
-            if (section === "digit-span-forward") startDigitSpanForward();
-            else if (section === "digit-span-reverse") startDigitSpanReverse();
-            else if (section === "stroop") startStroop();
-            else if (section === "posner") startPosner();
-            else if (section === "cpt") startCPT();
-        }
-
+        // Start Digit Span Forward Task
         function startDigitSpanForward() {
             digits = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10));
             const digitContainer = document.getElementById("digit-container");
-            digitContainer.textContent = digits.join(" ");
+            digitContainer.textContent = digits.join(" "); // Display digits
 
             setTimeout(() => {
-                digitContainer.textContent = "";
+                digitContainer.textContent = ""; // Clear digits after the display duration
                 document.getElementById("digit-input-forward").focus();
             }, trialsConfig.digitDuration);
         }
 
+        // Submit Forward Recall
         function submitForward() {
             const digitInput = document.getElementById("digit-input-forward").value.trim();
             if (digitInput !== digits.join("")) {
@@ -187,10 +131,12 @@
             navigateToNextSection();
         }
 
+        // Start Digit Span Reverse Task
         function startDigitSpanReverse() {
             document.getElementById("digit-input-reverse").focus();
         }
 
+        // Submit Reverse Recall
         function submitReverse() {
             const reverseInput = document.getElementById("digit-input-reverse").value.trim();
             if (reverseInput !== digits.reverse().join("")) {
@@ -200,6 +146,15 @@
             }
             responses.push({ task: "Digit Span Reverse", response: reverseInput });
             navigateToNextSection();
+        }
+
+        // Start Task Based on Current Section
+        function startTask(section) {
+            if (section === "digit-span-forward") {
+                startDigitSpanForward();
+            } else if (section === "digit-span-reverse") {
+                startDigitSpanReverse();
+            }
         }
     </script>
 </body>
