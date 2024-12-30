@@ -1,4 +1,5 @@
-1 <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -114,7 +115,7 @@
 
     <script>
         const trialsConfig = {
-            digitDuration: 5000,
+            digitDuration: 5000, // Time to display digits in milliseconds
             stroopTrials: 15,
             posnerTrials: 30,
             cptTrials: 100,
@@ -156,7 +157,14 @@
             }
         }
 
-        // Digit Span Task Logic
+        function startTask(section) {
+            if (section === "digit-span-forward") startDigitSpanForward();
+            else if (section === "digit-span-reverse") startDigitSpanReverse();
+            else if (section === "stroop") startStroop();
+            else if (section === "posner") startPosner();
+            else if (section === "cpt") startCPT();
+        }
+
         function startDigitSpanForward() {
             digits = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10));
             const digitContainer = document.getElementById("digit-container");
@@ -193,116 +201,7 @@
             responses.push({ task: "Digit Span Reverse", response: reverseInput });
             navigateToNextSection();
         }
-
-        // Stroop Task Logic
-        function startStroop() {
-            const stroopContainer = document.getElementById("stroop-container");
-            const stroopWords = ["Red", "Blue", "Green", "Yellow"];
-            const stroopColors = ["red", "blue", "green", "yellow"];
-            const word = stroopWords[Math.floor(Math.random() * stroopWords.length)];
-            const color = stroopColors[Math.floor(Math.random() * stroopColors.length)];
-
-            stroopContainer.textContent = word;
-            stroopContainer.style.color = color;
-
-            responses.push({ task: "Stroop", trial: trialIndex + 1, word, color });
-        }
-
-        function submitStroop() {
-            const stroopInput = document.getElementById("stroop-input").value.trim();
-            if (!stroopInput) {
-                alert("Please enter a response.");
-                return;
-            }
-            responses[responses.length - 1].response = stroopInput;
-
-            trialIndex++;
-            if (trialIndex >= trialsConfig.stroopTrials) {
-                alert("Stroop Task completed!");
-                navigateToNextSection();
-            } else {
-                startStroop();
-            }
-        }
-
-        // Posner Cueing Task Logic
-        function startPosner() {
-            const posnerContainer = document.getElementById("posner-container");
-            const direction = Math.random() > 0.5 ? "<<<" : ">>>";
-            posnerContainer.textContent = direction;
-
-            responses.push({ task: "Posner", trial: trialIndex + 1, direction });
-        }
-
-        function submitPosner() {
-            const posnerInput = document.getElementById("posner-input").value.trim();
-            if (!posnerInput) {
-                alert("Please enter a response.");
-                return;
-            }
-            responses[responses.length - 1].response = posnerInput;
-
-            trialIndex++;
-            if (trialIndex >= trialsConfig.posnerTrials) {
-                alert("Posner Cueing Task completed!");
-                navigateToNextSection();
-            } else {
-                startPosner();
-            }
-        }
-
-        // Continuous Performance Test Logic
-        function startCPT() {
-            const startButton = document.getElementById("start-cpt-button");
-            startButton.style.display = "none"; // Remove the "Start CPT" button
-            const cptContainer = document.getElementById("cpt-container");
-            const isTarget = Math.random() > 0.8; // 20% chance for "X"
-            const stimulus = isTarget ? "X" : ["A", "B", "C", "D"][Math.floor(Math.random() * 4)];
-            cptContainer.textContent = stimulus;
-
-            responses.push({ task: "CPT", trial: trialIndex + 1, stimulus, isTarget });
-
-            trialIndex++;
-            if (trialIndex >= trialsConfig.cptTrials) {
-                alert("CPT completed!");
-                navigateToNextSection();
-            } else {
-                setTimeout(startCPT, 1500); // 1.5 seconds per trial
-            }
-        }
-
-        // Questionnaire Logic
-        function submitSelfAssessment() {
-            const form = document.getElementById("self-assessment-form");
-            const formData = new FormData(form);
-            const data = {};
-            for (const [key, value] of formData.entries()) {
-                data[key] = value;
-            }
-            responses.push({ task: "Self-Assessment", responses: data });
-
-            const participationCode = responses.find((r) => r.participantCode)?.participantCode || "unknown";
-            saveResponses(participationCode);
-        }
-
-        // Save Responses
-        function saveResponses(participationCode) {
-            const blob = new Blob([JSON.stringify(responses, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = ${participationCode}_responses.json;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function startTask(section) {
-            if (section === "digit-span-forward") startDigitSpanForward();
-            else if (section === "digit-span-reverse") startDigitSpanReverse();
-            else if (section === "stroop") startStroop();
-            else if (section === "posner") startPosner();
-            else if (section === "cpt") startCPT();
-        }
     </script>
 </body>
 </html>
+
