@@ -188,16 +188,17 @@ function submitReverse() {
     const reverseInput = document.getElementById("digit-input-reverse").value.trim();
     const correctAnswer = digits.reverse().join(""); // Correct sequence in reverse order
 
-    // Record the response without feedback
+    // Log the response silently
     responses.push({
         task: "Digit Span Reverse",
         response: reverseInput,
         isCorrect: reverseInput === correctAnswer, // Log whether the answer is correct
     });
 
-    // Proceed to the next section regardless of correctness
+    // Proceed to the next section
     navigateToNextSection();
 }
+
 
 
 
