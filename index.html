@@ -49,7 +49,7 @@
         <h2>Welcome to the Assessment</h2>
         <p>Please enter your participation code to begin:</p>
         <input type="text" id="participant-code" placeholder="Enter your code">
-        <button id="start-button" onclick="startAssessment()">Start</button>
+        <button onclick="startAssessment()">Start</button>
     </section>
 
     <!-- Digit Span Task -->
@@ -68,22 +68,73 @@
         <button onclick="submitReverse()">Submit</button>
     </section>
 
-    <!-- Script for Interactivity -->
+    <!-- Stroop Task -->
+    <section id="stroop">
+        <h2>Stroop Task</h2>
+        <p>Identify the color of the text, not the word.</p>
+        <div id="stroop-container" class="trial-container"></div>
+        <input type="text" id="stroop-input" placeholder="Enter the color">
+        <button onclick="submitStroop()">Submit</button>
+    </section>
+
+    <!-- Posner Cueing Task -->
+    <section id="posner">
+        <h2>Posner Cueing Task</h2>
+        <p>Focus on the center of the screen and respond to the direction of the arrow ("l" for left, "r" for right).</p>
+        <div id="posner-container" class="trial-container">Focus here</div>
+        <input type="text" id="posner-input" placeholder="Enter 'l' or 'r'">
+        <button onclick="submitPosner()">Submit</button>
+    </section>
+
+    <!-- Continuous Performance Test -->
+    <section id="cpt">
+        <h2>Continuous Performance Test</h2>
+        <p>Press SPACE for the target ("X"). Do not respond to non-targets ("A", "B", "C", "D").</p>
+        <div id="cpt-container" class="trial-container">Get Ready...</div>
+        <button id="start-cpt-button" onclick="startCPT()">Start CPT</button>
+    </section>
+
+    <!-- Questionnaire Section -->
+    <section id="self-assessment">
+        <h2>Self-Assessment</h2>
+        <p>Rate the following questions on a scale of 1-10:</p>
+        <form id="self-assessment-form">
+            <p>1. How focused did you feel during the tasks? <input type="number" min="1" max="10" name="question1"></p>
+            <p>2. How fatigued do you feel after the tasks? <input type="number" min="1" max="10" name="question2"></p>
+            <p>3. How enjoyable did you find the tasks? <input type="number" min="1" max="10" name="question3"></p>
+            <p>4. How challenging were the tasks? <input type="number" min="1" max="10" name="question4"></p>
+            <p>5. How well do you think you performed? <input type="number" min="1" max="10" name="question5"></p>
+            <p>6. How often did you lose focus? <input type="number" min="1" max="10" name="question6"></p>
+            <p>7. How confident do you feel about your responses? <input type="number" min="1" max="10" name="question7"></p>
+            <p>8. How easy was it to understand the instructions? <input type="number" min="1" max="10" name="question8"></p>
+            <p>9. How comfortable were you during the assessment? <input type="number" min="1" max="10" name="question9"></p>
+            <p>10. How likely are you to participate in similar assessments again? <input type="number" min="1" max="10" name="question10"></p>
+            <button type="button" onclick="submitSelfAssessment()">Submit</button>
+        </form>
+    </section>
+
     <script>
         const trialsConfig = {
-            digitDuration: 5000, // Time to display digits in milliseconds
+            digitDuration: 5000,
+            stroopTrials: 15,
+            posnerTrials: 30,
+            cptTrials: 50,
         };
 
-        let currentSection = "welcome"; // Keeps track of the current active section
+        let currentSection = "welcome";
         let responses = [];
-        let digits; // Stores the digit sequence for the task
+        let trialIndex = 0;
+        let digits;
 
-        // Function to navigate to the next section
         function navigateToNextSection() {
             const sections = [
                 "welcome",
                 "digit-span-forward",
                 "digit-span-reverse",
+                "stroop",
+                "posner",
+                "cpt",
+                "self-assessment",
             ];
             const currentIndex = sections.indexOf(currentSection);
             if (currentIndex !== -1 && currentIndex < sections.length - 1) {
@@ -96,7 +147,6 @@
             }
         }
 
-        // Start the assessment
         function startAssessment() {
             const code = document.getElementById("participant-code").value.trim();
             if (code) {
@@ -107,19 +157,18 @@
             }
         }
 
-        // Start Digit Span Forward Task
+        // Digit Span Task Logic
         function startDigitSpanForward() {
             digits = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10));
             const digitContainer = document.getElementById("digit-container");
-            digitContainer.textContent = digits.join(" "); // Display digits
+            digitContainer.textContent = digits.join(" ");
 
             setTimeout(() => {
-                digitContainer.textContent = ""; // Clear digits after the display duration
+                digitContainer.textContent = "";
                 document.getElementById("digit-input-forward").focus();
             }, trialsConfig.digitDuration);
         }
 
-        // Submit Forward Recall
         function submitForward() {
             const digitInput = document.getElementById("digit-input-forward").value.trim();
             if (digitInput !== digits.join("")) {
@@ -131,12 +180,10 @@
             navigateToNextSection();
         }
 
-        // Start Digit Span Reverse Task
         function startDigitSpanReverse() {
             document.getElementById("digit-input-reverse").focus();
         }
 
-        // Submit Reverse Recall
         function submitReverse() {
             const reverseInput = document.getElementById("digit-input-reverse").value.trim();
             if (reverseInput !== digits.reverse().join("")) {
@@ -148,13 +195,121 @@
             navigateToNextSection();
         }
 
-        // Start Task Based on Current Section
-        function startTask(section) {
-            if (section === "digit-span-forward") {
-                startDigitSpanForward();
-            } else if (section === "digit-span-reverse") {
-                startDigitSpanReverse();
+        // Stroop Task Logic
+        function startStroop() {
+            const stroopContainer = document.getElementById("stroop-container");
+            const stroopWords = ["Red", "Blue", "Green", "Yellow"];
+            const stroopColors = ["red", "blue", "green", "yellow"];
+            const word = stroopWords[Math.floor(Math.random() * stroopWords.length)];
+            const color = stroopColors[Math.floor(Math.random() * stroopColors.length)];
+
+            stroopContainer.textContent = word;
+            stroopContainer.style.color = color;
+
+            responses.push({ task: "Stroop", trial: trialIndex + 1, word, color });
+        }
+
+        function submitStroop() {
+            const stroopInput = document.getElementById("stroop-input").value.trim();
+            if (!stroopInput) {
+                alert("Please enter a response.");
+                return;
             }
+            responses[responses.length - 1].response = stroopInput;
+
+            trialIndex++;
+            if (trialIndex >= trialsConfig.stroopTrials) {
+                alert("Stroop Task completed!");
+                navigateToNextSection();
+            } else {
+                startStroop();
+            }
+        }
+
+        // Posner Cueing Task Logic
+        function startPosner() {
+            const posnerContainer = document.getElementById("posner-container");
+            const direction = Math.random() > 0.5 ? "<<<" : ">>>";
+            posnerContainer.textContent = direction;
+
+            responses.push({ task: "Posner", trial: trialIndex + 1, direction });
+        }
+
+        function submitPosner() {
+            const posnerInput = document.getElementById("posner-input").value.trim();
+            if (!posnerInput) {
+                alert("Please enter a response.");
+                return;
+            }
+            responses[responses.length - 1].response = posnerInput;
+
+            trialIndex++;
+            if (trialIndex >= trialsConfig.posnerTrials) {
+                alert("Posner Cueing Task completed!");
+                navigateToNextSection();
+            } else {
+                startPosner();
+            }
+        }
+
+        // Continuous Performance Test Logic
+  function startCPT() {
+    const startButton = document.getElementById("start-cpt-button");
+    if (startButton) {
+        startButton.style.display = "none"; // Remove the "Start CPT" button
+    }
+
+    const cptContainer = document.getElementById("cpt-container");
+    const isTarget = Math.random() > 0.8; // 20% chance for "X"
+    const stimulus = isTarget ? "X" : ["A", "B", "C", "D"][Math.floor(Math.random() * 4)];
+    cptContainer.textContent = stimulus;
+
+    responses.push({ task: "CPT", trial: trialIndex + 1, stimulus, isTarget });
+
+    trialIndex++;
+
+    if (trialIndex >= trialsConfig.cptTrials) {
+        alert("CPT completed!");
+        navigateToNextSection();
+    } else {
+        // Adjust timing: 1.5 seconds for the first half, 0.5 seconds for the second half
+        const delay = trialIndex > trialsConfig.cptTrials / 2 ? 500 : 1500;
+        setTimeout(startCPT, delay); // Adjusted delay for faster trials in the second half
+    }
+}
+
+
+        // Questionnaire Logic
+        function submitSelfAssessment() {
+            const form = document.getElementById("self-assessment-form");
+            const formData = new FormData(form);
+            const data = {};
+            for (const [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            responses.push({ task: "Self-Assessment", responses: data });
+
+            const participationCode = responses.find((r) => r.participantCode)?.participantCode || "unknown";
+            saveResponses(participationCode);
+        }
+
+        // Save Responses
+        function saveResponses(participationCode) {
+            const blob = new Blob([JSON.stringify(responses, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${participationCode}_responses.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function startTask(section) {
+            if (section === "digit-span-forward") startDigitSpanForward();
+            else if (section === "digit-span-reverse") startDigitSpanReverse();
+            else if (section === "stroop") startStroop();
+            else if (section === "posner") startPosner();
+            else if (section === "cpt") startCPT();
         }
     </script>
 </body>
