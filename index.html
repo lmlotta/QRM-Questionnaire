@@ -184,22 +184,25 @@
             document.getElementById("digit-input-reverse").focus();
         }
 
- function submitReverse() {
+function submitReverse() {
     const reverseInput = document.getElementById("digit-input-reverse").value.trim();
     const isCorrect = reverseInput === digits.reverse().join("");
 
-    if (!isCorrect) {
-        alert("Incorrect reverse recall. Proceeding to the next section.");
-    }
-
+    // Record the response regardless of correctness
     responses.push({
         task: "Digit Span Reverse",
         response: reverseInput,
         isCorrect: isCorrect, // Log whether the answer was correct
     });
 
-    navigateToNextSection(); // Proceed to the next section regardless of correctness
+    if (!isCorrect) {
+        alert("Incorrect reverse recall. Proceeding to the next section."); // Inform the user
+    }
+
+    // Move to the next section regardless of correctness
+    navigateToNextSection();
 }
+
 
 
         // Stroop Task Logic
