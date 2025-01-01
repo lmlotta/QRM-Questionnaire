@@ -186,22 +186,19 @@
 
 function submitReverse() {
     const reverseInput = document.getElementById("digit-input-reverse").value.trim();
-    const isCorrect = reverseInput === digits.reverse().join("");
+    const correctAnswer = digits.reverse().join(""); // Correct sequence in reverse order
 
-    // Record the response regardless of correctness
+    // Record the response without feedback
     responses.push({
         task: "Digit Span Reverse",
         response: reverseInput,
-        isCorrect: isCorrect, // Log whether the answer was correct
+        isCorrect: reverseInput === correctAnswer, // Log whether the answer is correct
     });
 
-    if (!isCorrect) {
-        alert("Incorrect reverse recall. Proceeding to the next section."); // Inform the user
-    }
-
-    // Move to the next section regardless of correctness
+    // Proceed to the next section regardless of correctness
     navigateToNextSection();
 }
+
 
 
 
